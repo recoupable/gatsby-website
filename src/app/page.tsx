@@ -263,7 +263,7 @@ export default function Home() {
         <SocialIconLink href="https://youtube.com/@gatsbygrace" label="YouTube">
           <YouTubeIcon />
         </SocialIconLink>
-        <SocialIconLink href="#" label="Spotify">
+        <SocialIconLink href="https://open.spotify.com/artist/7ljukJB2Ctl0T4vCoYfb2x?si=zbxBz5zBQpW4SY4xszkKvQ" label="Spotify">
           <SpotifyIcon />
         </SocialIconLink>
       </motion.div>
