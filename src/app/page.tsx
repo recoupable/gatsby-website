@@ -1,15 +1,8 @@
-/**
- * gatsby.wtf
- *
- * Cinematic full-screen artist landing page.
- * Video-first. Minimal UI. Single clear action.
- */
-
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import { Bebas_Neue } from "next/font/google";
-import { motion, AnimatePresence } from "framer-motion";
 
 /** Bebas Neue — tall, condensed display font for brand identity */
 const bebasNeue = Bebas_Neue({
@@ -34,7 +27,7 @@ function SocialIconLink({ href, label, children }: SocialIconLinkProps) {
       aria-label={label}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-6 h-6 flex items-center justify-center text-white/50 hover:text-white/80 transition-colors"
+      className="flex min-h-11 min-w-11 items-center justify-center text-[#72667d] hover:text-[#2f1e40] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
     >
       {children}
     </a>
@@ -73,70 +66,30 @@ function SpotifyIcon() {
   );
 }
 
-function SpeakerOnIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M11 5 6 9H3v6h3l5 4V5Z" />
-      <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-      <path d="M18.5 6a8.5 8.5 0 0 1 0 12" />
-    </svg>
-  );
-}
-
-function SpeakerOffIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M11 5 6 9H3v6h3l5 4V5Z" />
-      <path d="m15 9 6 6" />
-      <path d="m21 9-6 6" />
-    </svg>
-  );
-}
-
-/* ───────────────────────────────────────────
-   Page component
-   ─────────────────────────────────────────── */
+const wishUrl = "https://open.spotify.com/track/4HJjUdcezdSSCBdy5JVHDs";
 
 export default function Home() {
-  const [isVideoMuted, setIsVideoMuted] = useState(true);
-  const [isEmailOpen, setIsEmailOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailError, setEmailError] = useState("");
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  const toggleVideoMute = () => {
-    const nextMutedState = !isVideoMuted;
-    setIsVideoMuted(nextMutedState);
-
-    if (videoRef.current) {
-      videoRef.current.muted = nextMutedState;
-      videoRef.current.play().catch(() => {});
-    }
-  };
 
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (!email.trim()) return;
-
+    if (!email.trim() || isSubmittingEmail) return;
     setIsSubmittingEmail(true);
     setEmailError("");
-
     try {
       const response = await fetch("/api/fans/capture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-
       if (!response.ok) {
         const errorData = (await response.json()) as { error?: string };
         setEmailError(errorData.error || "Could not save email.");
         return;
       }
-
       setEmailSubmitted(true);
       setEmail("");
     } catch {
@@ -147,126 +100,69 @@ export default function Home() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black isolate">
-      {/* ── Video background (brighter than before) ── */}
-      <video
-        ref={videoRef}
-        src="/videos/GatsbyGrace_PLAYBACK_after_00m27s.mp4"
-        className="absolute inset-0 w-full h-full object-cover filter-[brightness(0.55)_saturate(0.85)]"
-        preload="auto"
-        autoPlay
-        muted={isVideoMuted}
-        loop
-        playsInline
-      />
-
-      {/* ── Subtle top vignette for readability ── */}
-      <div className="absolute top-0 left-0 right-0 z-1 h-52 bg-linear-to-b from-black/40 via-black/20 to-transparent pointer-events-none" />
-
-      {/* ── Top bar — logo left, CTA right, vertically aligned ── */}
-      <motion.div
-        className="absolute top-6 left-6 right-6 sm:top-8 sm:left-8 sm:right-8 z-10 flex items-center justify-between"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <h1
-          className={`${bebasNeue.className} text-3xl sm:text-4xl leading-none tracking-[0.04em] text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)] select-none`}
-        >
+    <main className="min-h-screen bg-[#f4f0ea] text-[#302437]">
+      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-7 sm:px-10 sm:py-9">
+        <Link href="/" aria-label="Gatsby Grace home" className={`${bebasNeue.className} text-2xl tracking-wide focus-visible:outline-2 focus-visible:outline-offset-4`}>
           GATSBY.WTF
+        </Link>
+        <a href="#video" className="text-sm text-[#72667d] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4">
+          watch the video ↘
+        </a>
+      </header>
+
+      <section aria-labelledby="song-title" className="mx-auto max-w-5xl px-6 pb-12 pt-10 sm:px-10 sm:pb-16 sm:pt-14">
+        <p className="mb-5 text-xs tracking-[0.18em] text-[#72667d]">gatsby grace / the song from the videos</p>
+        <h1 id="song-title" className="text-[clamp(5rem,17vw,10rem)] leading-[0.9] tracking-[-0.065em]" style={{ fontFamily: "var(--font-body), Georgia, serif" }}>
+          i wish<span className="text-[#9d7db0]">.</span>
         </h1>
+        <p className="mb-8 mt-7 max-w-sm text-base leading-relaxed text-[#72667d]">i wanna be the one you love.</p>
+        <a href={wishUrl} className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-[#4c345c] px-8 py-4 text-base text-[#fffaf4] shadow-[0_5px_20px_rgba(76,52,92,0.12)] transition-colors hover:bg-[#382344] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4c345c] sm:w-auto">
+          <SpotifyIcon /> listen on spotify <span aria-hidden="true">↗</span>
+        </a>
+      </section>
 
-        {/* ── CTA — expandable email capture ── */}
-        <div className="pointer-events-auto">
-          <AnimatePresence mode="wait">
-            {emailSubmitted ? (
-              <motion.p
-                key="thanks"
-                className="text-white/70 text-sm"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                you&apos;re in ✓
-              </motion.p>
-            ) : !isEmailOpen ? (
-              <motion.button
-                key="trigger"
-                type="button"
-                onClick={() => setIsEmailOpen(true)}
-                className="text-white/70 text-sm tracking-wide hover:text-white transition-colors"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                Get Updates →
-              </motion.button>
-            ) : (
-              <motion.div
-                key="form"
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <form
-                  onSubmit={handleEmailSubmit}
-                  className="relative rounded-full bg-black/40 border border-white/20 backdrop-blur-sm"
-                >
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="your@email.com"
-                    required
-                    autoFocus
-                    className="w-52 sm:w-60 h-9 rounded-full bg-transparent pl-4 pr-12 text-sm text-white placeholder:text-white/35 focus:outline-none transition-colors"
-                  />
-                  <button
-                    type="submit"
-                    disabled={isSubmittingEmail}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full flex items-center justify-center text-sm text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {isSubmittingEmail ? "·" : "→"}
-                  </button>
-                </form>
-                {emailError ? (
-                  <p className="mt-1.5 text-right text-red-300/80 text-xs">{emailError}</p>
-                ) : null}
-              </motion.div>
-            )}
-          </AnimatePresence>
+      <section id="video" aria-labelledby="video-title" className="mx-auto max-w-5xl scroll-mt-6 px-6 sm:px-10">
+        <div className="mb-3 flex items-center justify-between text-xs text-[#72667d]">
+          <h2 id="video-title">a little more gatsby</h2>
+          <span>sound on, if you want</span>
         </div>
-      </motion.div>
+        <video
+          src="/videos/GatsbyGrace_PLAYBACK_after_00m27s.mp4"
+          poster="/images/gatsby-video-poster.jpg"
+          aria-label="Gatsby Grace music video"
+          className="aspect-video w-full rounded-sm bg-[#211825] object-cover"
+          preload="metadata"
+          controls
+          playsInline
+        />
+      </section>
 
-      {/* ── Bottom icons — minimal, low opacity, fade in ── */}
-      <motion.div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
-      >
-        <button
-          type="button"
-          onClick={toggleVideoMute}
-          aria-label={isVideoMuted ? "Unmute video" : "Mute video"}
-          className="w-6 h-6 flex items-center justify-center text-white/50 hover:text-white/80 transition-colors"
-        >
-          {isVideoMuted ? <SpeakerOffIcon /> : <SpeakerOnIcon />}
-        </button>
-        <SocialIconLink href="https://instagram.com/gatsby.wtf" label="Instagram">
-          <InstagramIcon />
-        </SocialIconLink>
-        <SocialIconLink href="https://tiktok.com/@gatsby.wtf" label="TikTok">
-          <TikTokIcon />
-        </SocialIconLink>
-        <SocialIconLink href="https://youtube.com/@gatsbygrace" label="YouTube">
-          <YouTubeIcon />
-        </SocialIconLink>
-        <SocialIconLink href="https://open.spotify.com/artist/7ljukJB2Ctl0T4vCoYfb2x?si=zbxBz5zBQpW4SY4xszkKvQ" label="Spotify">
-          <SpotifyIcon />
-        </SocialIconLink>
-      </motion.div>
-    </div>
+      <section aria-labelledby="about-title" className="mx-auto grid max-w-5xl gap-10 px-6 py-12 sm:grid-cols-2 sm:gap-16 sm:px-10 sm:py-16">
+        <div>
+          <h2 id="about-title" className="mb-4 text-3xl" style={{ fontFamily: "var(--font-body), Georgia, serif" }}>hi, i’m gatsby.</h2>
+          <p className="max-w-sm text-sm leading-7 text-[#72667d]">bedroom pop for overthinkers. little crushes, late-night thoughts, and trying to act normal.</p>
+          <nav aria-label="Gatsby on social media" className="mt-4 flex gap-1">
+            <SocialIconLink href="https://instagram.com/gatsby.wtf" label="Instagram"><InstagramIcon /></SocialIconLink>
+            <SocialIconLink href="https://tiktok.com/@gatsby.wtf" label="TikTok"><TikTokIcon /></SocialIconLink>
+            <SocialIconLink href="https://youtube.com/@gatsbygrace" label="YouTube"><YouTubeIcon /></SocialIconLink>
+          </nav>
+        </div>
+        <div>
+          <h2 className="mb-4 text-3xl" style={{ fontFamily: "var(--font-body), Georgia, serif" }}>occasionally, an email.</h2>
+          <p id="signup-description" className="mb-5 text-sm leading-7 text-[#72667d]">new music and little updates. only if you want them.</p>
+          {emailSubmitted ? (
+            <p role="status" className="text-sm">you’re in. thank you ♡</p>
+          ) : (
+            <form onSubmit={handleEmailSubmit} className="flex flex-wrap gap-2">
+              <label htmlFor="fan-email" className="sr-only">Email address</label>
+              <input id="fan-email" name="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="your@email.com" aria-describedby={`signup-description${emailError ? " signup-error" : ""}`} aria-invalid={Boolean(emailError)} className="min-h-12 min-w-0 flex-1 rounded-full bg-white/60 px-5 text-sm shadow-[inset_0_0_0_1px_rgba(76,52,92,0.2)] focus-visible:outline-2 focus-visible:outline-[#4c345c]" />
+              <button type="submit" disabled={isSubmittingEmail} className="min-h-12 rounded-full bg-[#e6dce9] px-5 text-sm hover:bg-[#d9c9df] focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-50">{isSubmittingEmail ? "saving…" : "keep me posted"}</button>
+              {emailError ? <p id="signup-error" role="alert" className="w-full text-sm text-red-800">{emailError}</p> : null}
+            </form>
+          )}
+        </div>
+      </section>
+      <footer className="mx-auto max-w-5xl px-6 pb-8 text-xs text-[#72667d] sm:px-10">gatsby grace ♡</footer>
+    </main>
   );
 }

@@ -23,13 +23,15 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "gatsby grace",
-  description: "bedroom pop pianist. diary entries in melody form.",
+  metadataBase: new URL("https://www.gatsby.wtf"),
+  title: "i wish — gatsby grace",
+  description: "listen to i wish by gatsby grace. bedroom pop for overthinkers.",
   keywords: ["gatsby grace", "bedroom pop", "piano", "gen alpha", "indie music", "ADHD"],
   openGraph: {
-    title: "gatsby grace",
-    description: "bedroom pop pianist. diary entries in melody form.",
+    title: "i wish — gatsby grace",
+    description: "listen to i wish by gatsby grace. bedroom pop for overthinkers.",
     type: "website",
+    images: [{ url: "/images/gatsby-video-poster.jpg", alt: "Gatsby Grace" }],
   },
 };
 
