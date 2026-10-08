@@ -24,12 +24,12 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.gatsby.wtf"),
-  title: "i wish — gatsby grace",
-  description: "listen to i wish by gatsby grace. bedroom pop for overthinkers.",
-  keywords: ["gatsby grace", "bedroom pop", "piano", "gen alpha", "indie music", "ADHD"],
+  title: "gatsby",
+  description: "Gatsby Grace. Music, videos, updates.",
+  keywords: ["gatsby", "gatsby grace", "music"],
   openGraph: {
-    title: "i wish — gatsby grace",
-    description: "listen to i wish by gatsby grace. bedroom pop for overthinkers.",
+    title: "gatsby",
+    description: "Gatsby Grace. Music, videos, updates.",
     type: "website",
     images: [{ url: "/images/gatsby-video-poster.jpg", alt: "Gatsby Grace" }],
   },

@@ -1,14 +1,15 @@
 # Music playback integration
 
-Verified October 8, 2026. This page uses Spotify's official playlist embed and a direct Apple Music song link. No new website login, dependencies, credentials, or API routes are needed.
+Verified October 8, 2026. The homepage is a silent full-screen video with Spotify and Apple Music buttons. They open provider-owned web players in new tabs; they do not create a Gatsby account, initiate website OAuth, or force a login dialog for existing provider sessions. No new dependencies, credentials, or API routes are needed.
 
 ## Website behavior
 
-- Spotify playlist: `5b8JKnvweOEaLqS00nIr7n`. Browser verification showed 19 songs, with I Wish first. The website heading is `gatsby starter pack`; the provider's saved title remains `gatsby grace starter pack`.
-- The iframe preserves Spotify's documented permissions, including `encrypted-media`, and reserves 352px height. The separate playlist link works even when embedded content is blocked.
-- Playback is controlled by Spotify for the listener's browser/session. In the verification session the player showed Preview; starting I Wish changed the control to Pause, and pausing worked. This does not prove authenticated full playback.
-- Apple destination: [I Wish by Gatsby Grace](https://music.apple.com/us/album/i-wish/1894545725?i=6762530659), verified through Apple's public iTunes search and the Apple Music page. The artist is `1877412628`, song `6762530659`, album `1894545725`. This is an outbound listening link, not Apple login on this website.
-- The existing I Wish Spotify CTA, video, social links, and email form remain present. The form handler and capture route are unchanged.
+- Spotify destination: `https://open.spotify.com/playlist/5b8JKnvweOEaLqS00nIr7n`. Browser handoff verified the public playlist has 19 songs, with I Wish first. Its saved title remains `gatsby grace starter pack`.
+- Apple destination: [Beautiful Tomorrow by Gatsby Grace](https://music.apple.com/us/album/beautiful-tomorrow/1894545725). The user approved this album destination while an Apple Music playlist is unavailable. Browser handoff verified the correct album page. It includes I Wish, song `6762530659`.
+- The video is always muted and has no unmute control. Autoplay is skipped when reduced motion is requested. A small play/pause control remains available.
+- The cream layout, song headline, bio, promotional copy, social icon row and embedded player are removed. Metadata now leads with Gatsby.
+- Email signup is preserved behind a small updates button. The native dialog provides focus containment, Escape dismissal and focus return; opening it pauses the video. The capture API and email submission behavior are unchanged.
+- Playback, sign-in prompts, account/subscription rules, app handoff and regional availability are controlled by Spotify and Apple Music. No forced autoplay or authenticated full playback is claimed.
 
 ## Existing Recoup capabilities
 
@@ -40,7 +41,9 @@ Official references: [Spotify embed creation](https://developer.spotify.com/docu
 
 ## Validation
 
-- Production build and TypeScript check passed; ESLint on the changed page and `git diff --check` passed.
-- Chrome browser verification at 390×844 and 1440×1000: no horizontal overflow; real playlist content and preview play/pause verified. This is responsive browser testing, not a physical-device or authenticated Premium test.
-- Full-project lint retains three pre-existing `react-hooks/set-state-in-effect` errors in `MeshGradientGhost.tsx`, `browser/Browser.tsx`, and `phone/MessagesApp.tsx`.
-- No live email was submitted during verification. No production deployment or playlist rename was performed.
+- Production build and TypeScript check passed; ESLint on both changed source files and `git diff --check` passed.
+- Chrome browser verification at 390×844 and 1440×900: responsive buttons and no horizontal overflow; video muted during playback; pause control worked.
+- Both provider buttons were clicked and opened new tabs with the exact Spotify playlist and Apple album titles. No provider login or account mutation was performed.
+- Mobile signup dialog checked visually; Escape closed it and returned focus to updates. No live email submitted.
+- Full-project lint previously identified three pre-existing `react-hooks/set-state-in-effect` errors in `MeshGradientGhost.tsx`, `browser/Browser.tsx`, and `phone/MessagesApp.tsx`; those files remain untouched.
+- This is browser viewport testing, not physical-device playback verification. No production merge/deployment or playlist rename was performed.
