@@ -83,16 +83,18 @@ export default function Home() {
       />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/45 via-transparent to-black/70" />
 
-      <div className="absolute inset-x-0 bottom-0 px-6 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-7">
-        <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-sm flex-col gap-3 pb-7 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4 sm:pb-10">
-          <a href={playlistUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-black/65 px-7 text-sm font-medium text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3)] backdrop-blur-md transition-colors hover:bg-black/85 focus-visible:outline-2 focus-visible:outline-offset-4">
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6">
+        <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
+          <a href={playlistUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4">
             <SpotifyIcon /> sign in with Spotify <span className="sr-only">(opens Spotify playlist in a new tab)</span>
           </a>
-          <a href={appleAlbumUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-black/65 px-7 text-sm font-medium text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3)] backdrop-blur-md transition-colors hover:bg-black/85 focus-visible:outline-2 focus-visible:outline-offset-4">
+          <a href={appleAlbumUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4">
             <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] fill-current" aria-hidden="true"><path d="M18 3v12.5a3.5 3.5 0 1 1-2-3.16V6.2l-7 1.5v9.8a3.5 3.5 0 1 1-2-3.16V6l11-3Z" /></svg>
             sign in with Apple Music <span className="sr-only">(opens Gatsby’s album in a new tab)</span>
           </a>
         </nav>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 px-6 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-7">
         <div className="flex items-center justify-between">
           <button type="button" onClick={openUpdates} className={quietControl}>updates</button>
           <button type="button" className={quietControl} aria-label={isPlaying ? "Pause background video" : "Play background video"} onClick={() => {
