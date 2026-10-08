@@ -67,6 +67,8 @@ function SpotifyIcon() {
 }
 
 const wishUrl = "https://open.spotify.com/track/4HJjUdcezdSSCBdy5JVHDs";
+const playlistUrl = "https://open.spotify.com/playlist/5b8JKnvweOEaLqS00nIr7n";
+const appleWishUrl = "https://music.apple.com/us/album/i-wish/1894545725?i=6762530659";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -119,6 +121,33 @@ export default function Home() {
         <a href={wishUrl} className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-[#4c345c] px-8 py-4 text-base text-[#fffaf4] shadow-[0_5px_20px_rgba(76,52,92,0.12)] transition-colors hover:bg-[#382344] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4c345c] sm:w-auto">
           <SpotifyIcon /> listen on spotify <span aria-hidden="true">↗</span>
         </a>
+        <a href={appleWishUrl} className="mt-3 flex min-h-11 items-center justify-center text-sm text-[#72667d] underline underline-offset-4 hover:text-[#302437] focus-visible:outline-2 focus-visible:outline-offset-4 sm:ml-6 sm:mt-0 sm:inline-flex">
+          i wish on apple music ↗
+        </a>
+      </section>
+
+      <section aria-labelledby="playlist-title" className="mx-auto max-w-5xl px-6 pb-12 sm:px-10 sm:pb-16">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 id="playlist-title" className="text-3xl" style={{ fontFamily: "var(--font-body), Georgia, serif" }}>gatsby starter pack</h2>
+            <p className="mt-2 text-sm leading-6 text-[#72667d]">i wish first. everything else i’m overthinking after.</p>
+          </div>
+          <a href={playlistUrl} className="inline-flex min-h-11 items-center gap-2 text-sm text-[#4c345c] underline underline-offset-4 hover:text-[#302437] focus-visible:outline-2 focus-visible:outline-offset-4">
+            <SpotifyIcon /> open playlist ↗
+          </a>
+        </div>
+        <iframe
+          title="Gatsby Grace starter pack on Spotify"
+          src="https://open.spotify.com/embed/playlist/5b8JKnvweOEaLqS00nIr7n?utm_source=generator"
+          width="100%"
+          height="352"
+          className="rounded-xl border-0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+          aria-describedby="playlist-help"
+        />
+        <p id="playlist-help" className="mt-3 text-xs leading-5 text-[#72667d]">only getting a preview? open the playlist in spotify to keep listening.</p>
       </section>
 
       <section id="video" aria-labelledby="video-title" className="mx-auto max-w-5xl scroll-mt-6 px-6 sm:px-10">
