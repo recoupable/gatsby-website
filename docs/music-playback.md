@@ -54,8 +54,26 @@ Keep the accepted silent video, centered Spotify-green and Apple-red buttons, an
 
 Reduce the background video from 41,108,417 bytes to a 1280px silent encode without changing its scenes or duration. Keep the original asset available, but remove it from the landing-page download path. Remove two unused Google font families; the accepted design uses system fonts.
 
-Measurement remains a gap: no analytics SDK or event collector is configured in this repository. Do not treat deployment as instrumentation, a button click as a stream, or an empty baseline as zero. Before the next comparison, use the chosen site's analytics service to measure landing sessions and outbound Spotify/Apple clicks, segmented by tagged acquisition source. Do not send emails, provider tokens or arbitrary query strings in analytics payloads. No new paid analytics service was enabled in this change.
+At the October 9 release, Vercel Web Analytics was enabled on the existing project and the official SDK was added. Page views, music-link clicks and successful signup events are instrumented; provider playback remains outside website measurement. Historical website conversion data before instrumentation is unavailable. Do not treat deployment as instrumentation, a button click as a stream, or an empty baseline as zero. Before the next comparison, use the chosen site's analytics service to measure landing sessions and outbound Spotify/Apple clicks, segmented by tagged acquisition source. Do not send emails, provider tokens or arbitrary query strings in analytics payloads. The existing Vercel Pro project is used; no plan upgrade or separate analytics service was purchased.
 
 Suggested comparison: record a 7-day baseline and the following 7 days after release, retaining traffic-source mix and release dates. Measure outbound clicks / landing sessions separately for each provider. Review actual listeners, streams per listener and saves in the artist dashboards for the matching period. These aggregate music metrics are not attributable website conversions without a supported attribution mechanism. Spotify requires at least 30 seconds of playback for a stream ([official definition](https://support.spotify.com/us/artists/article/how-we-count-streams/)).
 
 Next experiment depends on traffic intent: a general bio link keeps the starter-pack playlist; an I Wish-specific campaign can test a direct-song destination. Do not silently replace the user's selected playlist or approved Apple album before defining that experiment.
+
+## Measurement implementation — October 9
+
+- Automatic page views use `@vercel/analytics/next`. `music_link_clicked` records provider, selected destination, fixed variant and allowlisted source/medium/campaign/content. `signup_completed` fires only after the capture API returns success; it never includes the email.
+- Query strings are stripped except documented allowlisted campaign values. Preview hosts, localhost and URLs containing `analytics_test` are excluded. Link navigation does not wait for tracking; blockers and network failures may reduce measured clicks.
+- Use provider-specific unique click visitors / landing visitors for the same source and reporting window. Raw clicks / page views are a secondary interaction rate, not a listener conversion rate. Compare seven complete days after release against the next seven; there is no instrumented pre-release website baseline. Use music-dashboard metrics alongside these periods without claiming user-level attribution.
+- Approved starter-pack playlist and Apple album remain the baseline destinations. Do not change social profiles or assign an experiment winner without evidence.
+
+Ready-to-use acquisition links (not yet installed in social profiles):
+
+| Placement | URL |
+| --- | --- |
+| Instagram bio | https://www.gatsby.wtf/?utm_source=instagram&utm_medium=social&utm_campaign=bio&utm_content=profile |
+| TikTok bio | https://www.gatsby.wtf/?utm_source=tiktok&utm_medium=social&utm_campaign=bio&utm_content=profile |
+| Instagram I Wish Reel | https://www.gatsby.wtf/?utm_source=instagram&utm_medium=social&utm_campaign=i_wish&utm_content=reel |
+| TikTok I Wish video | https://www.gatsby.wtf/?utm_source=tiktok&utm_medium=social&utm_campaign=i_wish&utm_content=video |
+
+Validation: production build, changed-file lint, analytics redaction/attribution tests and 844×320 short-screen controls passed. Explicit white keyboard-focus rings were verified. Vercel accepted analytics enablement; release verification must additionally confirm script delivery and collected events.

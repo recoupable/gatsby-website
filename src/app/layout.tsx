@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import FunnelAnalytics from "@/components/FunnelAnalytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.gatsby.wtf"),
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         {children}
+        <FunnelAnalytics />
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { trackFunnelEvent } from "@/lib/funnel-analytics";
 
 function SpotifyIcon() {
   return (
@@ -59,6 +60,7 @@ export default function Home() {
         setEmailError(errorData.error || "Could not save email.");
         return;
       }
+      trackFunnelEvent("signup_completed");
       setEmailSubmitted(true);
       setEmail("");
     } catch {
@@ -68,11 +70,11 @@ export default function Home() {
     }
   };
 
-  const quietControl = "inline-flex min-h-11 items-center text-sm text-white/80 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4";
+  const quietControl = "inline-flex min-h-11 items-center text-sm text-white/80 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
   const dialogStyle = "fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-md overflow-y-auto rounded-xl bg-[#121212] p-5 text-white shadow-2xl backdrop:bg-black/70 sm:p-6";
 
   return (
-    <main className="relative isolate h-dvh min-h-96 overflow-hidden bg-black text-white">
+    <main className="relative isolate h-dvh overflow-hidden bg-black text-white">
       <h1 className="sr-only">Gatsby Grace — listen</h1>
       <video
         ref={videoRef}
@@ -90,10 +92,10 @@ export default function Home() {
 
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6">
         <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
-          <a href={playlistUrl} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4">
+          <a href={playlistUrl} onClick={() => trackFunnelEvent("music_link_clicked", "spotify")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             <SpotifyIcon /> listen on Spotify <span className="sr-only">(opens Gatsby’s playlist)</span>
           </a>
-          <a href={appleAlbumUrl} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4">
+          <a href={appleAlbumUrl} onClick={() => trackFunnelEvent("music_link_clicked", "apple_music")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] fill-current" aria-hidden="true"><path d="M18 3v12.5a3.5 3.5 0 1 1-2-3.16V6.2l-7 1.5v9.8a3.5 3.5 0 1 1-2-3.16V6l11-3Z" /></svg>
             listen on Apple Music <span className="sr-only">(opens Gatsby’s album)</span>
           </a>
