@@ -35,8 +35,8 @@
   --accent-soft: var(--purple-soft);
   
   /* Font families */
-  --font-body: var(--font-body), "Cormorant Garamond", Georgia, serif;
-  --font-display: var(--font-display), "Caveat", cursive;
+  --font-body: Georgia, serif;
+  --font-display: cursive;
 }
 
 @theme inline {
