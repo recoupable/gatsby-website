@@ -1,7 +1,7 @@
 import { track, type BeforeSendEvent } from "@vercel/analytics";
 
 const campaignValues: Record<string, readonly string[]> = {
-  utm_source: ["instagram", "tiktok", "youtube", "facebook", "newsletter", "verification"],
+  utm_source: ["instagram", "tiktok", "youtube", "facebook", "x", "newsletter", "verification"],
   utm_medium: ["social", "paid_social", "email"],
   utm_campaign: ["bio", "i_wish", "release_check"],
   utm_content: ["profile", "reel", "story", "video"],
@@ -20,13 +20,16 @@ export function sanitizeAnalyticsEvent(event: BeforeSendEvent): BeforeSendEvent 
 }
 
 export function trackFunnelEvent(name: "landing_viewed" | "music_link_clicked" | "signup_completed", provider?: "spotify" | "apple_music") {
-  if (new URL(window.location.href).pathname !== "/") return;
+  const path = new URL(window.location.href).pathname;
+  if (!["/", "/i-wish", "/i-wish/"].includes(path)) return;
   if (!sanitizeAnalyticsEvent({ type: "event", url: window.location.href })) return;
   const query = new URLSearchParams(window.location.search);
-  const acquisition = Object.entries(campaignValues).map(([key, values]) => {
+  const source = Object.entries(campaignValues).map(([key, values]) => {
     const value = query.get(key)?.toLowerCase();
     return value && values.includes(value) ? value : "unattributed";
   }).join("/");
+  // Pro allows two custom properties; the song route adds a finite suffix.
+  const acquisition = path === "/" ? source : `${source}/i_wish`;
   try {
     track(name, { acquisition, ...(provider ? { provider } : {}) });
   } catch {
