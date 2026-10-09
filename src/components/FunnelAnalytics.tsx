@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/react";
 import { sanitizeAnalyticsEvent, trackFunnelEvent } from "@/lib/funnel-analytics";
 
 export default function FunnelAnalytics() {
