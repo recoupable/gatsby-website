@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import vm from "node:vm";
+import ts from "typescript";
+
+const calls = [];
+const exports = {};
+const context = { exports, URL, URLSearchParams, window: { location: { href: "https://www.gatsby.wtf/?utm_source=instagram&utm_medium=social&utm_campaign=bio&email=private@example.com" , search: "?utm_source=instagram&utm_medium=social&utm_campaign=bio&email=private@example.com" } }, require: () => ({ track: (...args) => calls.push(args) }) };
+vm.runInNewContext(ts.transpileModule(readFileSync("src/lib/funnel-analytics.ts", "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText, context);
+const { sanitizeAnalyticsEvent, trackFunnelEvent } = exports;
+const clean = sanitizeAnalyticsEvent({ type: "pageview", url: "https://www.gatsby.wtf/?utm_source=INSTAGRAM&utm_campaign=bio&email=private@example.com#secret" });
+assert.equal(clean.url, "https://www.gatsby.wtf/?utm_source=instagram&utm_campaign=bio");
+for (const url of ["http://localhost:3151/", "https://preview.vercel.app/", "https://www.gatsby.wtf/?analytics_test=1"]) assert.equal(sanitizeAnalyticsEvent({ type: "event", url }), null);
+assert.equal(sanitizeAnalyticsEvent({ type: "pageview", url: "https://www.gatsby.wtf/?utm_source=private@example.com&token=secret" }).url, "https://www.gatsby.wtf/");
+trackFunnelEvent("music_link_clicked", "spotify");
+assert.equal(calls.length, 1);
+assert.equal(calls[0][1].provider, "spotify");
+assert.equal(calls[0][1].acquisition, "instagram/social/bio/unattributed");
+assert.equal(Object.keys(calls[0][1]).length, 2);
+assert.ok(!JSON.stringify(calls).includes("private@example.com"));
+context.window.location.href = "https://www.gatsby.wtf/?analytics_test=1";
+trackFunnelEvent("signup_completed");
+assert.equal(calls.length, 1);
+console.log("Analytics redaction, attribution, test exclusion and provider handoff payload checks passed.");
