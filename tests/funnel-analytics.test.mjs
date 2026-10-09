@@ -15,7 +15,8 @@ assert.equal(sanitizeAnalyticsEvent({ type: "pageview", url: "https://www.gatsby
 trackFunnelEvent("music_link_clicked", "spotify");
 assert.equal(calls.length, 1);
 assert.equal(calls[0][1].provider, "spotify");
-assert.equal(calls[0][1].source, "instagram");
+assert.equal(calls[0][1].acquisition, "instagram/social/bio/unattributed");
+assert.equal(Object.keys(calls[0][1]).length, 2);
 assert.ok(!JSON.stringify(calls).includes("private@example.com"));
 context.window.location.href = "https://www.gatsby.wtf/?analytics_test=1";
 trackFunnelEvent("signup_completed");

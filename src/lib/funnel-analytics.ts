@@ -19,15 +19,16 @@ export function sanitizeAnalyticsEvent(event: BeforeSendEvent): BeforeSendEvent 
   return { ...event, url: clean.toString() };
 }
 
-export function trackFunnelEvent(name: "music_link_clicked" | "signup_completed", provider?: "spotify" | "apple_music") {
+export function trackFunnelEvent(name: "landing_viewed" | "music_link_clicked" | "signup_completed", provider?: "spotify" | "apple_music") {
+  if (new URL(window.location.href).pathname !== "/") return;
   if (!sanitizeAnalyticsEvent({ type: "event", url: window.location.href })) return;
   const query = new URLSearchParams(window.location.search);
-  const attribution = Object.fromEntries(Object.entries(campaignValues).map(([key, values]) => {
+  const acquisition = Object.entries(campaignValues).map(([key, values]) => {
     const value = query.get(key)?.toLowerCase();
-    return [key.replace("utm_", ""), value && values.includes(value) ? value : "unattributed"];
-  }));
+    return value && values.includes(value) ? value : "unattributed";
+  }).join("/");
   try {
-    track(name, { ...attribution, ...(provider ? { provider, destination: provider === "spotify" ? "starter_pack_playlist" : "beautiful_tomorrow_album" } : {}), variant: "video_centered_v1" });
+    track(name, { acquisition, ...(provider ? { provider } : {}) });
   } catch {
     // Measurement must never interrupt the handoff to music or signup success.
   }
