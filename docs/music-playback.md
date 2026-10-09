@@ -63,7 +63,7 @@ Next experiment depends on traffic intent: a general bio link keeps the starter-
 ## Measurement implementation — October 9
 
 - Automatic page views use `@vercel/analytics/next`. `music_link_clicked` records provider, selected destination, fixed variant and allowlisted source/medium/campaign/content. `signup_completed` fires only after the capture API returns success; it never includes the email.
-- Query strings are stripped except documented allowlisted campaign values. Preview hosts, localhost and URLs containing `analytics_test` are excluded. Link navigation does not wait for tracking; blockers and network failures may reduce measured clicks.
+- Query strings are stripped except documented allowlisted campaign values. Preview hosts, localhost and URLs containing `analytics_test` are excluded. Release smoke checks use `utm_source=verification&utm_campaign=release_check`; exclude these tagged checks from performance comparisons. Link navigation does not wait for tracking; blockers and network failures may reduce measured clicks.
 - Use provider-specific unique click visitors / landing visitors for the same source and reporting window. Raw clicks / page views are a secondary interaction rate, not a listener conversion rate. Compare seven complete days after release against the next seven; there is no instrumented pre-release website baseline. Use music-dashboard metrics alongside these periods without claiming user-level attribution.
 - Approved starter-pack playlist and Apple album remain the baseline destinations. Do not change social profiles or assign an experiment winner without evidence.
 

@@ -1,9 +1,9 @@
 import { track, type BeforeSendEvent } from "@vercel/analytics";
 
 const campaignValues: Record<string, readonly string[]> = {
-  utm_source: ["instagram", "tiktok", "youtube", "facebook", "newsletter"],
+  utm_source: ["instagram", "tiktok", "youtube", "facebook", "newsletter", "verification"],
   utm_medium: ["social", "paid_social", "email"],
-  utm_campaign: ["bio", "i_wish"],
+  utm_campaign: ["bio", "i_wish", "release_check"],
   utm_content: ["profile", "reel", "story", "video"],
 };
 
