@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     title: "I Wish — Gatsby Grace",
     description: "Listen on Spotify or Apple Music.",
     url: "/i-wish",
+    type: "website",
+    images: [{ url: "/images/gatsby-video-poster.jpg", alt: "Gatsby Grace" }],
   },
 };
 

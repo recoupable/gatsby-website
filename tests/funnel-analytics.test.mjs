@@ -52,6 +52,10 @@ for (const [alias, platform] of [["/ig", "instagram"], ["/tt", "tiktok"], ["/yt"
   const destination = new URL(redirect.destination, "https://www.gatsby.wtf");
   assert.equal(destination.pathname, "/");
   assert.equal(destination.searchParams.get("utm_source"), platform);
-  assert.ok(sanitizeAnalyticsEvent({type: "pageview", url: destination.href}).url.includes(`utm_source=${platform}`));
+  const cleanDestination = new URL(sanitizeAnalyticsEvent({type: "pageview", url: destination.href}).url);
+  for (const [key, value] of Object.entries({ utm_source: platform, utm_medium: "social", utm_campaign: "bio", utm_content: "profile" })) {
+    assert.equal(destination.searchParams.get(key), value);
+    assert.equal(cleanDestination.searchParams.get(key), value);
+  }
 }
 console.log("Short profile links retain supported source attribution and the homepage destination.");
