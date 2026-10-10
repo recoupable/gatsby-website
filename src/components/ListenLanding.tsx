@@ -93,7 +93,7 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/45 via-transparent to-black/70" />
 
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6">
-        <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-sm flex-col gap-3">
+        <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-[240px] flex-col gap-3">
           <a href={links.spotify.url} onClick={() => trackFunnelEvent("music_link_clicked", "spotify")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             <SpotifyIcon /> Listen on Spotify <span className="sr-only">{links.spotify.description}</span>
           </a>
