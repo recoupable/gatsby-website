@@ -95,11 +95,11 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6">
         <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
           <a href={links.spotify.url} onClick={() => trackFunnelEvent("music_link_clicked", "spotify")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            <SpotifyIcon /> listen on Spotify <span className="sr-only">{links.spotify.description}</span>
+            <SpotifyIcon /> Listen on Spotify <span className="sr-only">{links.spotify.description}</span>
           </a>
           <a href={links.apple.url} onClick={() => trackFunnelEvent("music_link_clicked", "apple_music")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] fill-current" aria-hidden="true"><path d="M18 3v12.5a3.5 3.5 0 1 1-2-3.16V6.2l-7 1.5v9.8a3.5 3.5 0 1 1-2-3.16V6l11-3Z" /></svg>
-            listen on Apple Music <span className="sr-only">{links.apple.description}</span>
+            Listen on Apple Music <span className="sr-only">{links.apple.description}</span>
           </a>
         </nav>
       </div>
