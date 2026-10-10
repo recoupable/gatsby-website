@@ -59,3 +59,28 @@ for (const [alias, platform] of [["/ig", "instagram"], ["/tt", "tiktok"], ["/yt"
   }
 }
 console.log("Short profile links retain supported source attribution and the homepage destination.");
+
+for (const query of ["ig", "ig&tt", "x=unrelated", "x="]) {
+  context.window.location.href = `https://www.gatsby.wtf/listen?${query}`;
+  trackFunnelEvent("landing_viewed");
+  assert.equal(calls.at(-1)[1].acquisition, "unattributed/unattributed/unattributed/unattributed");
+}
+console.log("Bare listening page ignores unrelated shorthand queries.");
+
+for (const [key, platform] of [["ig", "instagram"], ["tt", "tiktok"], ["yt", "youtube"], ["x", "x"]]) {
+  for (const suffix of ["", "/"]) {
+    context.window.location.href = `https://www.gatsby.wtf/listen/${key}${suffix}?tt&email=private@example.com`;
+    trackFunnelEvent("landing_viewed");
+    assert.equal(calls.at(-1)[1].acquisition, `${platform}/social/bio/profile`);
+    const sanitized = new URL(sanitizeAnalyticsEvent({ type: "pageview", url: context.window.location.href }).url);
+    assert.equal(sanitized.searchParams.get("utm_source"), platform);
+    assert.ok(!sanitized.searchParams.has("email"));
+  }
+}
+const beforeUnknown = calls.length;
+for (const url of ["https://www.gatsby.wtf/listen/unknown", "https://www.gatsby.wtf/listen/ig?analytics_test=1"]) {
+  context.window.location.href = url;
+  trackFunnelEvent("landing_viewed");
+}
+assert.equal(calls.length, beforeUnknown);
+console.log("Query-free source paths retain attribution and reject unsupported paths and QA.");
