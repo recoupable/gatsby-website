@@ -1,3 +1,4 @@
+export { metadata } from "../page";
 export { default } from "../../page";
 
 export const dynamicParams = false;

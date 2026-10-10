@@ -18,15 +18,11 @@ function acquisitionQuery(url: URL): URLSearchParams {
   const query = new URLSearchParams(url.search);
   const pathname = url.pathname.replace(/\/$/, "");
   const pathSource = Object.keys(shortSources).find(key => pathname === `/listen/${key}`);
-  if (pathname === "/listen" || pathSource) {
-    const matches = pathSource ? [pathSource] : Object.keys(shortSources).filter(key => query.has(key));
-    // Ambiguous shorthand must not silently attribute to the first platform.
-    if (matches.length === 1) {
-      query.set("utm_source", shortSources[matches[0]]);
-      query.set("utm_medium", "social");
-      query.set("utm_campaign", "bio");
-      query.set("utm_content", "profile");
-    }
+  if (pathSource) {
+    query.set("utm_source", shortSources[pathSource]);
+    query.set("utm_medium", "social");
+    query.set("utm_campaign", "bio");
+    query.set("utm_content", "profile");
   }
   return query;
 }
