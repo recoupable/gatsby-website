@@ -23,8 +23,10 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [provider, setProvider] = useState<"spotify" | "apple_music" | null>(null);
   const [playerUrl, setPlayerUrl] = useState("");
+  const [playerHeight, setPlayerHeight] = useState(400);
   const openPlayer = (selected: "spotify" | "apple_music") => {
     setProvider(selected);
+    setPlayerHeight(400);
     setPlayerUrl(recoupPlayerUrl(selected, selected === "spotify" ? links.spotify.url : links.apple.url, window.location.origin));
     trackFunnelEvent("player_opened", selected);
     playerRef.current?.showModal();
@@ -35,6 +37,7 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
       if (event.data?.type === "recoup:playback" && event.data.provider === provider && playbackEvents.includes(event.data.event)) {
         trackFunnelEvent(`player_${event.data.event}` as Parameters<typeof trackFunnelEvent>[0], provider);
       }
+      if (event.data?.type === "recoup-music-resize" && Number.isFinite(event.data.height)) setPlayerHeight(Math.min(600, Math.max(240, event.data.height)));
       if (event.data?.type === "recoup-music-continue") frameRef.current?.contentWindow?.postMessage({ type: "recoup-music-entered" }, new URL(recoupPlayerOrigin).origin);
       if (event.data?.type === "recoup-music-minimize") playerRef.current?.close();
     };
@@ -141,7 +144,7 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
 
       <dialog ref={playerRef} aria-label="Listen to Gatsby in Recoup" className={dialogStyle} onClose={() => { setProvider(null); setPlayerUrl(""); }}>
         <div className="mb-3 flex justify-end"><button type="button" onClick={() => playerRef.current?.close()} className={quietControl}>close</button></div>
-        {playerUrl && <iframe ref={frameRef} src={playerUrl} title="Recoup music player" allow="autoplay; encrypted-media" className="h-[min(600px,70dvh)] w-full rounded-lg bg-black" />}
+        {playerUrl && <iframe ref={frameRef} src={playerUrl} title="Recoup music player" allow="autoplay; encrypted-media" style={{ height: playerHeight, maxHeight: "70dvh" }} className="w-full rounded-lg bg-black" />}
         <a href={provider === "spotify" ? links.spotify.url : links.apple.url} className={quietControl} onClick={() => provider && trackFunnelEvent("music_link_clicked", provider)}>Open in {provider === "spotify" ? "Spotify" : "Apple"}</a>
       </dialog>
       <dialog ref={updatesRef} aria-labelledby="updates-title" className={dialogStyle}>
