@@ -1,4 +1,7 @@
-export const recoupPlayerOrigin = process.env.NEXT_PUBLIC_RECOUP_PLAYER_ORIGIN || "https://app.recoupable.dev";
+const configuredOrigin = process.env.NEXT_PUBLIC_RECOUP_PLAYER_ORIGIN || "https://app.recoupable.dev";
+const parsedOrigin = new URL(configuredOrigin);
+if (parsedOrigin.username || parsedOrigin.password || parsedOrigin.search || parsedOrigin.hash || parsedOrigin.pathname !== "/" || (parsedOrigin.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && parsedOrigin.protocol === "http:" && ["localhost", "127.0.0.1"].includes(parsedOrigin.hostname)))) throw new Error("Invalid Recoup player origin");
+export const recoupPlayerOrigin = parsedOrigin.origin;
 export const playbackEvents = ["connected", "playing", "paused", "track_changed", "fan_captured", "capture_failed"] as const;
 export type PlayerKind = "home" | "iWish";
 export function registeredPlayerId(kind: PlayerKind = "home"): string | null {

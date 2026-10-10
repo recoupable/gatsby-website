@@ -12,16 +12,6 @@ Sign-in is not marketing consent. The existing updates signup remains separate. 
 
 ## Superseded implementation and earlier audit
 
-## Recoup player fix — implementation awaiting activation
-
-The next release replaces the two DSP handoffs with a Recoup player dialog. Spotify playback remains on Recoup's trusted origin; its server verifies `/v1/me` before saving available email in the existing Gatsby fan namespace. Authorization does not enroll fans in marketing. Apple uses MusicKit with an origin-bound developer token from Recoup's API. Provider tokens do not reach Gatsby.
-
-Play/pause/track-change analytics are anonymous browser events. They are neither DSP stream counts nor per-fan listening histories. The existing updates signup remains a separate opt-in.
-
-Activation order: API browser-token endpoint, Recoup app players, production Spotify client ID and registered `https://app.recoupable.dev/s/spotify/callback`, then Gatsby. Existing production Spotify configuration is unavailable. Verify real provider authorization, saved email and playback after activation, including mobile in-app browsers. Local previews and unit tests do not prove those steps.
-
-The older audit below describes the preceding external-link release.
-
 # Music playback integration
 
 Updated October 9, 2026. The homepage is a silent full-screen video with Spotify and Apple Music buttons. They open provider-owned web players in the same tab; they do not create a Gatsby account, initiate website OAuth, or force a login dialog for existing provider sessions. No new dependencies, credentials, or API routes are needed.
