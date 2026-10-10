@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { recoupPlayerOrigin, recoupPlayerUrl, playbackEvents } from "@/lib/recoup-player";
 import { trackFunnelEvent } from "@/lib/funnel-analytics";
 
 function SpotifyIcon() {
@@ -18,6 +19,28 @@ type ListeningLinks = {
 };
 
 export default function ListenLanding({ links }: { links: ListeningLinks }) {
+  const playerRef = useRef<HTMLDialogElement>(null);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const [provider, setProvider] = useState<"spotify" | "apple_music" | null>(null);
+  const [playerUrl, setPlayerUrl] = useState("");
+  const openPlayer = (selected: "spotify" | "apple_music") => {
+    setProvider(selected);
+    setPlayerUrl(recoupPlayerUrl(selected, selected === "spotify" ? links.spotify.url : links.apple.url, window.location.origin));
+    trackFunnelEvent("player_opened", selected);
+    playerRef.current?.showModal();
+  };
+  useEffect(() => {
+    const receive = (event: MessageEvent) => {
+      if (event.origin !== new URL(recoupPlayerOrigin).origin || event.source !== frameRef.current?.contentWindow || !provider) return;
+      if (event.data?.type === "recoup:playback" && event.data.provider === provider && playbackEvents.includes(event.data.event)) {
+        trackFunnelEvent(`player_${event.data.event}` as Parameters<typeof trackFunnelEvent>[0], provider);
+      }
+      if (event.data?.type === "recoup-music-continue") frameRef.current?.contentWindow?.postMessage({ type: "recoup-music-entered" }, new URL(recoupPlayerOrigin).origin);
+      if (event.data?.type === "recoup-music-minimize") playerRef.current?.close();
+    };
+    window.addEventListener("message", receive);
+    return () => window.removeEventListener("message", receive);
+  }, [provider]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const updatesRef = useRef<HTMLDialogElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -94,13 +117,13 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
 
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6">
         <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-[240px] flex-col gap-3">
-          <a href={links.spotify.url} onClick={() => trackFunnelEvent("music_link_clicked", "spotify")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            <SpotifyIcon /> Listen on Spotify <span className="sr-only">{links.spotify.description}</span>
-          </a>
-          <a href={links.apple.url} onClick={() => trackFunnelEvent("music_link_clicked", "apple_music")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          <button type="button" onClick={() => openPlayer("spotify")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <SpotifyIcon /> Sign in with Spotify <span className="sr-only">{links.spotify.description}</span>
+          </button>
+          <button type="button" onClick={() => openPlayer("apple_music")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] fill-current" aria-hidden="true"><path d="M18 3v12.5a3.5 3.5 0 1 1-2-3.16V6.2l-7 1.5v9.8a3.5 3.5 0 1 1-2-3.16V6l11-3Z" /></svg>
-            Listen on Apple <span className="sr-only">{links.apple.description}</span>
-          </a>
+            Sign in with Apple <span className="sr-only">{links.apple.description}</span>
+          </button>
         </nav>
       </div>
       <div className="absolute inset-x-0 bottom-0 px-6 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-7">
@@ -116,6 +139,11 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
         </div>
       </div>
 
+      <dialog ref={playerRef} aria-label="Listen to Gatsby in Recoup" className={dialogStyle} onClose={() => { setProvider(null); setPlayerUrl(""); }}>
+        <div className="mb-3 flex justify-end"><button type="button" onClick={() => playerRef.current?.close()} className={quietControl}>close</button></div>
+        {playerUrl && <iframe ref={frameRef} src={playerUrl} title="Recoup music player" allow="autoplay; encrypted-media" className="h-[min(600px,70dvh)] w-full rounded-lg bg-black" />}
+        <a href={provider === "spotify" ? links.spotify.url : links.apple.url} className={quietControl} onClick={() => provider && trackFunnelEvent("music_link_clicked", provider)}>Open in {provider === "spotify" ? "Spotify" : "Apple"}</a>
+      </dialog>
       <dialog ref={updatesRef} aria-labelledby="updates-title" className={dialogStyle}>
         <div className="mb-5 flex items-center justify-between gap-4">
           <h2 id="updates-title" className="text-lg">updates</h2>
