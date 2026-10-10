@@ -2,14 +2,15 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import ts from "typescript";
-const exports = {};
-runInNewContext(ts.transpileModule(readFileSync("src/lib/recoup-player.ts", "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, { exports, process: { env: {} }, URL });
-for (const [provider, release, route] of [["spotify", "https://open.spotify.com/playlist/5b8JKnvweOEaLqS00nIr7n", "spotify"], ["apple_music", "https://music.apple.com/us/album/beautiful-tomorrow/1894545725", "apple"]]) {
-  const url = new URL(exports.recoupPlayerUrl(provider, release, "https://www.gatsby.wtf"));
-  assert.equal(url.origin, "https://app.recoupable.dev");
-  assert.equal(url.pathname, `/s/${route}/connect`);
-  assert.equal(url.searchParams.get("release"), release);
-  assert.equal(url.searchParams.get("parent"), "https://www.gatsby.wtf");
-  assert.equal(url.searchParams.has("token"), false);
+const source=ts.transpileModule(readFileSync("src/lib/recoup-player.ts","utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+function load(env){const exports={};runInNewContext(source,{exports,process:{env},URL});return exports;}
+const id="10000000-0000-4000-8000-000000000001";
+const player=load({NEXT_PUBLIC_RECOUP_PLAYER_ID:id});
+for(const provider of ["spotify","apple_music"]){
+ const url=new URL(player.recoupPlayerUrl(provider,"https://www.gatsby.wtf",{source:"instagram",campaign:"bio"}));
+ assert.equal(url.pathname,`/listen/${id}/${provider}`);assert.equal(url.searchParams.get("parent"),"https://www.gatsby.wtf");assert.equal(url.searchParams.get("source"),"instagram");assert.equal(url.searchParams.has("release"),false);assert.equal(url.searchParams.has("token"),false);
 }
-console.log("Both provider buttons use Recoup's trusted player and retain the requested release.");
+assert.equal(load({}).recoupPlayerUrl("spotify","https://www.gatsby.wtf",{}),null);
+assert.equal(player.recoupPlayerUrl("spotify","https://www.gatsby.wtf",{},"iWish"),null);
+assert.equal(load({NEXT_PUBLIC_RECOUP_PLAYER_ID:"bad"}).recoupPlayerUrl("spotify","https://www.gatsby.wtf",{}),null);
+console.log("Registered player IDs replace artist-specific auth URLs; missing configuration retains direct DSP access.");

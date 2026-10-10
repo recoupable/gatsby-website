@@ -27,6 +27,14 @@ function acquisitionQuery(url: URL): URLSearchParams {
   return query;
 }
 
+export function listeningAcquisition(url: URL): Record<string, string> {
+  const query = acquisitionQuery(url);
+  return Object.fromEntries(Object.entries(campaignValues).flatMap(([key, values]) => {
+    const value = query.get(key)?.toLowerCase();
+    return value && values.includes(value) ? [[key.replace("utm_", ""), value]] : [];
+  }));
+}
+
 // Keep attribution finite and exclude arbitrary query strings from analytics.
 export function sanitizeAnalyticsEvent(event: BeforeSendEvent): BeforeSendEvent | null {
   const url = new URL(event.url);

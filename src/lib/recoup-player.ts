@@ -1,13 +1,15 @@
 export const recoupPlayerOrigin = process.env.NEXT_PUBLIC_RECOUP_PLAYER_ORIGIN || "https://app.recoupable.dev";
 export const playbackEvents = ["connected", "playing", "paused", "track_changed", "fan_captured", "capture_failed"] as const;
-
-export function recoupPlayerUrl(provider: "spotify" | "apple_music", release: string, parent: string): string {
-  const url = new URL(`/s/${provider === "spotify" ? "spotify" : "apple"}/connect`, recoupPlayerOrigin);
-  url.searchParams.set("release", release);
-  url.searchParams.set("mode", "listen");
+export type PlayerKind = "home" | "iWish";
+export function registeredPlayerId(kind: PlayerKind = "home"): string | null {
+  const id = kind === "iWish" ? process.env.NEXT_PUBLIC_RECOUP_WISH_PLAYER_ID : process.env.NEXT_PUBLIC_RECOUP_PLAYER_ID;
+  return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null;
+}
+export function recoupPlayerUrl(provider: "spotify" | "apple_music", parent: string, acquisition: Record<string, string>, kind: PlayerKind = "home"): string | null {
+  const id = registeredPlayerId(kind);
+  if (!id) return null;
+  const url = new URL(`/listen/${id}/${provider}`, recoupPlayerOrigin);
   url.searchParams.set("parent", parent);
-  if (provider === "spotify") {
-    for (const [key, value] of Object.entries({ background: "#121212", foreground: "#ffffff", accent: "#1DB954", font: "sans", title: "Listen to Gatsby", artist: "Gatsby Grace", artwork: "" })) url.searchParams.set(key, value);
-  }
+  for (const key of ["source", "medium", "campaign", "content"]) if (acquisition[key]) url.searchParams.set(key, acquisition[key]);
   return url.toString();
 }

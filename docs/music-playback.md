@@ -1,3 +1,17 @@
+# Shared Recoup release player — pending activation
+
+The website now consumes registered API-owned player IDs, not Gatsby-specific authorization routes. The API owns release destinations, exact embed origins, fan identity and listening events; the app hosts one browser player.
+
+Set `NEXT_PUBLIC_RECOUP_PLAYER_ID` for the homepage playlist/Apple album pair and `NEXT_PUBLIC_RECOUP_WISH_PLAYER_ID` for I Wish. These are separate records so campaign traffic cannot silently switch releases. The website does not send owner IDs, emails, DSP tokens, or destination overrides into the player.
+
+Missing player IDs retain direct Spotify/Apple listening links and truthful Listen labels. Configured IDs switch to Sign in buttons and open the shared player in the existing centered dialog. Source attribution from short /listen/ig links and approved UTM labels is forwarded as bounded campaign fields.
+
+Dependencies: apply the release-player database migration, release API/app, register and explicitly enable the two player records with Gatsby's verified artist/workspace and both gatsby.wtf origins, set the public player IDs, then verify real fan authorization, playback, fan readback and listening-event readback on mobile. No production player record or real fan playback has been verified for this version.
+
+Sign-in is not marketing consent. The existing updates signup remains separate. Spotify-confirmed available email is saved to private API artist/workspace fan records; Apple sessions remain anonymous. Browser activity is not DSP stream totals or causal uplift.
+
+## Superseded implementation and earlier audit
+
 ## Recoup player fix — implementation awaiting activation
 
 The next release replaces the two DSP handoffs with a Recoup player dialog. Spotify playback remains on Recoup's trusted origin; its server verifies `/v1/me` before saving available email in the existing Gatsby fan namespace. Authorization does not enroll fans in marketing. Apple uses MusicKit with an origin-bound developer token from Recoup's API. Provider tokens do not reach Gatsby.

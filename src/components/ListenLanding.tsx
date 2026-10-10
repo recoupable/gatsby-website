@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { recoupPlayerOrigin, recoupPlayerUrl, playbackEvents } from "@/lib/recoup-player";
-import { trackFunnelEvent } from "@/lib/funnel-analytics";
+import { recoupPlayerOrigin, recoupPlayerUrl, playbackEvents, registeredPlayerId, type PlayerKind } from "@/lib/recoup-player";
+import { trackFunnelEvent, listeningAcquisition } from "@/lib/funnel-analytics";
 
 function SpotifyIcon() {
   return (
@@ -18,16 +18,23 @@ type ListeningLinks = {
   apple: { url: string; description: string };
 };
 
-export default function ListenLanding({ links }: { links: ListeningLinks }) {
+export default function ListenLanding({ links, playerKind = "home" }: { links: ListeningLinks; playerKind?: PlayerKind }) {
+  const hasPlayer = !!registeredPlayerId(playerKind);
   const playerRef = useRef<HTMLDialogElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [provider, setProvider] = useState<"spotify" | "apple_music" | null>(null);
   const [playerUrl, setPlayerUrl] = useState("");
   const [playerHeight, setPlayerHeight] = useState(400);
   const openPlayer = (selected: "spotify" | "apple_music") => {
+    const url = recoupPlayerUrl(selected, window.location.origin, listeningAcquisition(new URL(window.location.href)), playerKind);
+    if (!url) {
+      trackFunnelEvent("music_link_clicked", selected);
+      window.location.assign(selected === "spotify" ? links.spotify.url : links.apple.url);
+      return;
+    }
     setProvider(selected);
     setPlayerHeight(400);
-    setPlayerUrl(recoupPlayerUrl(selected, selected === "spotify" ? links.spotify.url : links.apple.url, window.location.origin));
+    setPlayerUrl(url);
     trackFunnelEvent("player_opened", selected);
     playerRef.current?.showModal();
   };
@@ -38,7 +45,6 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
         trackFunnelEvent(`player_${event.data.event}` as Parameters<typeof trackFunnelEvent>[0], provider);
       }
       if (event.data?.type === "recoup-music-resize" && Number.isFinite(event.data.height)) setPlayerHeight(Math.min(600, Math.max(240, event.data.height)));
-      if (event.data?.type === "recoup-music-continue") frameRef.current?.contentWindow?.postMessage({ type: "recoup-music-entered" }, new URL(recoupPlayerOrigin).origin);
       if (event.data?.type === "recoup-music-minimize") playerRef.current?.close();
     };
     window.addEventListener("message", receive);
@@ -121,11 +127,11 @@ export default function ListenLanding({ links }: { links: ListeningLinks }) {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6">
         <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-[240px] flex-col gap-3">
           <button type="button" onClick={() => openPlayer("spotify")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            <SpotifyIcon /> Sign in with Spotify <span className="sr-only">{links.spotify.description}</span>
+            <SpotifyIcon /> {hasPlayer ? "Sign in with Spotify" : "Listen on Spotify"} <span className="sr-only">{links.spotify.description}</span>
           </button>
           <button type="button" onClick={() => openPlayer("apple_music")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] fill-current" aria-hidden="true"><path d="M18 3v12.5a3.5 3.5 0 1 1-2-3.16V6.2l-7 1.5v9.8a3.5 3.5 0 1 1-2-3.16V6l11-3Z" /></svg>
-            Sign in with Apple <span className="sr-only">{links.apple.description}</span>
+            {hasPlayer ? "Sign in with Apple" : "Listen on Apple"} <span className="sr-only">{links.apple.description}</span>
           </button>
         </nav>
       </div>
