@@ -77,3 +77,23 @@ Ready-to-use acquisition links (not yet installed in social profiles):
 | TikTok I Wish video | https://www.gatsby.wtf/?utm_source=tiktok&utm_medium=social&utm_campaign=i_wish&utm_content=video |
 
 Validation: production build, changed-file lint, analytics redaction/attribution tests and 844×320 short-screen controls passed. Explicit white keyboard-focus rings were verified. Vercel accepted analytics enablement; release verification must additionally confirm script delivery and collected events.
+
+
+## Listening journey comparison — October 9
+
+The homepage retains the approved playlist and album destinations. The separate `/i-wish` route uses the same landing component and server-rendered buttons, opening the verified Spotify track and Apple Music song. It adds no website authentication or player. It is a candidate for a bounded destination comparison, not an experiment winner or an automatic change to social profiles. Its metadata names the song for link previews.
+
+Use short public profile links when tagged queries would be unwieldy:
+
+| Profile | Link |
+| --- | --- |
+| Instagram | https://www.gatsby.wtf/ig |
+| TikTok | https://www.gatsby.wtf/tt |
+| YouTube | https://www.gatsby.wtf/yt |
+| X | https://www.gatsby.wtf/x |
+
+Each is a temporary HTTP redirect to the homepage with fixed allowlisted source, social medium, bio campaign and profile content. The redirect adds no user interaction. These aliases are available after this change is deployed; they are not yet installed in social profiles.
+
+For the direct-song comparison, use `/i-wish` with the same allowlisted source tags as the homepage. Custom events keep the two-property Pro limit: homepage acquisition remains `source/medium/campaign/content`; the song route appends `/i_wish`. Match visitors and clicks within the same complete period, provider and acquisition value. Do not pool routes or present DSP clicks as confirmed streams. Landing events run again on a client-side change of pathname. Preview, localhost and `analytics_test` events remain excluded.
+
+Before changing allocation, verify actual-device playback/app handoff for both routes and document the compared traffic windows. Start with usability evidence; current low traffic does not justify a statistical conversion winner. Human test plays must be recorded separately from organic listening.
