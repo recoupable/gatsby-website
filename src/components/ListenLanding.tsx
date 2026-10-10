@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { recoupPlayerOrigin, recoupPlayerUrl, playbackEvents, registeredPlayerId, type PlayerKind } from "@/lib/recoup-player";
+import { recoupPlayerOrigin, recoupPlayerUrl, playbackEvents, registeredPlayerId, isSpotifyHandoff, type PlayerKind } from "@/lib/recoup-player";
 import { trackFunnelEvent, listeningAcquisition } from "@/lib/funnel-analytics";
 
 function SpotifyIcon() {
@@ -40,6 +40,11 @@ export default function ListenLanding({ links, playerKind = "home" }: { links: L
   };
   useEffect(() => {
     const receive = (event: MessageEvent) => {
+      if (isSpotifyHandoff(event, frameRef.current?.contentWindow, provider)) {
+        trackFunnelEvent("music_link_clicked", "spotify");
+        window.location.assign(links.spotify.url);
+        return;
+      }
       if (event.origin !== new URL(recoupPlayerOrigin).origin || event.source !== frameRef.current?.contentWindow || !provider) return;
       if (event.data?.type === "recoup:playback" && event.data.provider === provider && playbackEvents.includes(event.data.event)) {
         trackFunnelEvent(`player_${event.data.event}` as Parameters<typeof trackFunnelEvent>[0], provider);
@@ -49,7 +54,7 @@ export default function ListenLanding({ links, playerKind = "home" }: { links: L
     };
     window.addEventListener("message", receive);
     return () => window.removeEventListener("message", receive);
-  }, [provider]);
+  }, [provider, links.spotify.url]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const updatesRef = useRef<HTMLDialogElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);

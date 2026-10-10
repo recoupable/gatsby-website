@@ -16,3 +16,10 @@ assert.equal(load({NEXT_PUBLIC_RECOUP_PLAYER_ID:"bad"}).recoupPlayerUrl("spotify
 console.log("Registered player IDs replace artist-specific auth URLs; missing configuration retains direct DSP access.");
 
 for (const origin of ["app.recoupable.dev", "https://app.recoupable.dev/path", "https://user@app.recoupable.dev"]) assert.throws(() => load({NEXT_PUBLIC_RECOUP_PLAYER_ORIGIN:origin}));
+
+const frame={};
+const handoff={origin:"https://app.recoupable.dev",source:frame,data:{type:"recoup:open-dsp",provider:"spotify"}};
+assert.equal(player.isSpotifyHandoff(handoff,frame,"spotify"),true);
+for (const event of [{...handoff,origin:"https://evil.example"},{...handoff,source:{}},{...handoff,data:{type:"recoup:open-dsp",provider:"apple_music"}},{...handoff,source:null}]) assert.equal(player.isSpotifyHandoff(event,frame,"spotify"),false);
+assert.equal(player.isSpotifyHandoff(handoff,frame,"apple_music"),false);
+assert.equal(player.isSpotifyHandoff({...handoff,source:null},null,"spotify"),false);

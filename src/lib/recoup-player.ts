@@ -16,3 +16,9 @@ export function recoupPlayerUrl(provider: "spotify" | "apple_music", parent: str
   for (const key of ["source", "medium", "campaign", "content"]) if (acquisition[key]) url.searchParams.set(key, acquisition[key]);
   return url.toString();
 }
+
+
+/** A player may request handoff, but never chooses the website's destination URL. */
+export function isSpotifyHandoff(event: MessageEvent, frame: MessageEventSource | null | undefined, provider: "spotify" | "apple_music" | null): boolean {
+  return !!frame && event.origin === recoupPlayerOrigin && event.source === frame && provider === "spotify" && event.data?.type === "recoup:open-dsp" && event.data.provider === "spotify";
+}
