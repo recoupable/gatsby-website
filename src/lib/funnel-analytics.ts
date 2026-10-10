@@ -27,6 +27,14 @@ function acquisitionQuery(url: URL): URLSearchParams {
   return query;
 }
 
+export function listeningAcquisition(url: URL): Record<string, string> {
+  const query = acquisitionQuery(url);
+  return Object.fromEntries(Object.entries(campaignValues).flatMap(([key, values]) => {
+    const value = query.get(key)?.toLowerCase();
+    return value && values.includes(value) ? [[key.replace("utm_", ""), value]] : [];
+  }));
+}
+
 // Keep attribution finite and exclude arbitrary query strings from analytics.
 export function sanitizeAnalyticsEvent(event: BeforeSendEvent): BeforeSendEvent | null {
   const url = new URL(event.url);
@@ -40,7 +48,7 @@ export function sanitizeAnalyticsEvent(event: BeforeSendEvent): BeforeSendEvent 
   return { ...event, url: clean.toString() };
 }
 
-export function trackFunnelEvent(name: "landing_viewed" | "music_link_clicked" | "signup_completed", provider?: "spotify" | "apple_music") {
+export function trackFunnelEvent(name: "landing_viewed" | "music_link_clicked" | "signup_completed" | "player_opened" | "player_connected" | "player_playing" | "player_paused" | "player_track_changed" | "player_fan_captured" | "player_capture_failed", provider?: "spotify" | "apple_music") {
   const path = new URL(window.location.href).pathname;
   const normalizedPath = path.replace(/\/$/, "") || "/";
   const sourcePath = Object.keys(shortSources).some(key => normalizedPath === `/listen/${key}`);

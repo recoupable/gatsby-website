@@ -15,5 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function IWish() {
-  return <ListenLanding links={listeningDestinations.iWish} />;
+  return <ListenLanding links={listeningDestinations.iWish} playerKind="iWish" />;
 }
