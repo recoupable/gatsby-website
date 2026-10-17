@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { recoupPlayerOrigin, recoupPlayerUrl, playbackEvents, registeredPlayerId, isSpotifyHandoff, type PlayerKind } from "@/lib/recoup-player";
+import { recoupPlayerOrigin, recoupPlayerUrl, playbackEvents, isSpotifyHandoff, type PlayerKind } from "@/lib/recoup-player";
 import { trackFunnelEvent, listeningAcquisition } from "@/lib/funnel-analytics";
 
 function SpotifyIcon() {
@@ -19,7 +19,6 @@ type ListeningLinks = {
 };
 
 export default function ListenLanding({ links, playerKind = "home" }: { links: ListeningLinks; playerKind?: PlayerKind }) {
-  const hasPlayer = !!registeredPlayerId(playerKind);
   const playerRef = useRef<HTMLDialogElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [provider, setProvider] = useState<"spotify" | "apple_music" | null>(null);
@@ -132,11 +131,11 @@ export default function ListenLanding({ links, playerKind = "home" }: { links: L
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6">
         <nav aria-label="Listen to Gatsby" className="mx-auto flex w-full max-w-[240px] flex-col gap-3">
           <button type="button" onClick={() => openPlayer("spotify")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#1DB954] px-7 text-sm font-medium text-black shadow-lg transition-colors hover:bg-[#1ed760] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            <SpotifyIcon /> {hasPlayer ? "Sign in with Spotify" : "Listen on Spotify"} <span className="sr-only">{links.spotify.description}</span>
+            <SpotifyIcon /> Play on Spotify <span className="sr-only">{links.spotify.description}</span>
           </button>
           <button type="button" onClick={() => openPlayer("apple_music")} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#D60017] px-7 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#bd0014] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] fill-current" aria-hidden="true"><path d="M18 3v12.5a3.5 3.5 0 1 1-2-3.16V6.2l-7 1.5v9.8a3.5 3.5 0 1 1-2-3.16V6l11-3Z" /></svg>
-            {hasPlayer ? "Sign in with Apple" : "Listen on Apple"} <span className="sr-only">{links.apple.description}</span>
+            Play on Apple <span className="sr-only">{links.apple.description}</span>
           </button>
         </nav>
       </div>
